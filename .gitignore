@@ -1,4 +1,4 @@
 # no binaries
+!**/*.go
 !.gitignore
-**/*.go
 /knowledge
