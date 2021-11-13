@@ -32,7 +32,7 @@ func TestNewNotes(t *testing.T) {
 	assertNote(t, posts[0], notesbot.Note{
 		Title: "hello world",
 		Tags:  []string{"tdd", "go"},
-		Body:  `Hello world`,
+		Body:  `Hello world Body`,
 	})
 }
 
@@ -60,7 +60,7 @@ func TestFindNoteByAttribute(t *testing.T) {
 		assertNote(t, note, notesbot.Note{
 			Title: "hello world",
 			Tags:  []string{"tdd", "go"},
-			Body:  `Hello world`,
+			Body:  `Hello world Body`,
 		})
 	})
 

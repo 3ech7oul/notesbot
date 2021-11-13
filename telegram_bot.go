@@ -1,21 +1,20 @@
-package main
+package notesbot
 
 import (
 	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 	"strings"
-
-	notesbot "deni/notesbot"
 )
 
 const TELEGRAM_POST_URL = "https://api.telegram.org/bot777845702:AAFdPS_taJ3pTecEFv2jXkmbQfeOqVZGERw/sendMessage"
 
-var notes []notesbot.Note
+type NotesBoot struct {
+	store Store
+	http.Handler
+}
 
 // Create a struct that mimics the webhook response body
 // https://core.telegram.org/bots/api#update
@@ -34,16 +33,16 @@ type sendMessageReqBody struct {
 	Text   string `json:"text"`
 }
 
-func Handler(res http.ResponseWriter, req *http.Request) {
+func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 	body := &webhookReqBody{}
 	if err := json.NewDecoder(req.Body).Decode(body); err != nil {
 		fmt.Println("could not decode request body", err)
 		return
 	}
 
-	if !strings.Contains(strings.ToLower(body.Message.Text), "get list") {
+	if strings.Contains(strings.ToLower(body.Message.Text), "get list") {
 
-		if err := sendList(body.Message.Chat.ID, notesbot.AllNotesTitleList(notes)); err != nil {
+		if err := n.sendList(body.Message.Chat.ID); err != nil {
 			fmt.Println("send list:", err)
 			return
 		}
@@ -51,8 +50,9 @@ func Handler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	serchngNote := strings.ToLower(body.Message.Text)
-	note, err := notesbot.FindNoteByAttribute(notes, serchngNote)
+	requestdNote := strings.ToLower(body.Message.Text)
+
+	note, err := FindNoteByAttribute(n.store.AllNotes(), requestdNote)
 
 	if nil != err {
 		fmt.Println("error in sending reply:", err)
@@ -67,7 +67,7 @@ func Handler(res http.ResponseWriter, req *http.Request) {
 	fmt.Println("reply sent")
 }
 
-func sendResponce(chatID int64, note notesbot.Note) error {
+func sendResponce(chatID int64, note Note) error {
 
 	reqBody := &sendMessageReqBody{
 		ChatID: chatID,
@@ -91,8 +91,8 @@ func sendResponce(chatID int64, note notesbot.Note) error {
 	return nil
 }
 
-func sendList(chatID int64, titleListSlice []string) error {
-	titlesList := strings.Join(titleListSlice, ",")
+func (n *NotesServer) sendList(chatID int64) error {
+	titlesList := n.ListMessage()
 	reqBody := &sendMessageReqBody{
 		ChatID: chatID,
 		Text:   titlesList,
@@ -109,21 +109,31 @@ func sendList(chatID int64, titleListSlice []string) error {
 		return err
 	}
 	if res.StatusCode != http.StatusOK {
-		return errors.New("unexpected status" + res.Status)
+		return errors.New("unexpected 34 status" + res.Status)
 	}
 
 	return nil
 }
 
-// FInally, the main funtion starts our server on port 3000
-func main() {
-	var err error
-	notes, err = notesbot.NewNotesFromFS("../knowledge", os.DirFS("../knowledge"))
-	if err != nil {
-		log.Fatal(err)
+func (n *NotesServer) ListMessage() string {
+	var titles []string
+	for _, note := range n.store.AllNotes() {
+		titles = append(titles, fmt.Sprintf("/%s", note.Title))
 	}
 
-	fmt.Printf("Posts indexed: %d\n", len(notes))
+	return strings.Join(titles[:], ` \n `)
+}
 
-	http.ListenAndServe(":3000", http.HandlerFunc(Handler))
+func (n *NotesServer) OneMessage(title string) (string, error) {
+	var message string
+
+	note, err := FindNoteByAttribute(n.store.AllNotes(), title)
+	if nil != err {
+		return message, err
+	}
+
+	message = fmt.Sprintf(`%s \n %s`, note.Title, note.Body)
+
+	return message, nil
+
 }
