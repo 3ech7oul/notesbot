@@ -94,10 +94,10 @@ func (n *NotesServer) sendResponce(chatID int64, note Note) error {
 }
 
 func (n *NotesServer) sendList(chatID int64) error {
-	titlesList := n.ListMessage()
+	//titlesList := n.ListMessage()
 	reqBody := &sendMessageReqBody{
 		ChatID: chatID,
-		Text:   titlesList,
+		Text:   "titlesList",
 	}
 
 	reqBytes, err := json.Marshal(reqBody)
