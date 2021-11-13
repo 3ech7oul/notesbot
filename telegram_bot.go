@@ -40,9 +40,9 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	if strings.Contains(strings.ToLower(body.Message.Text), "get list") {
-
 		if err := n.sendList(body.Message.Chat.ID); err != nil {
 			fmt.Println("send list:", err)
+
 			return
 		}
 
@@ -50,6 +50,7 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	requestdNote := strings.ToLower(body.Message.Text)
+	fmt.Println(requestdNote)
 
 	note, err := FindNoteByAttribute(n.store.AllNotes(), requestdNote)
 
@@ -74,13 +75,13 @@ func (n *NotesServer) sendResponce(chatID int64, note Note) error {
 		ChatID: chatID,
 		Text:   note.Body,
 	}
+	fmt.Println(note)
 
 	reqBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		return err
 	}
 
-	// Send a post request with your token
 	res, err := http.Post(n.urlPost(), "application/json", bytes.NewBuffer(reqBytes))
 	if err != nil {
 		return err
@@ -94,10 +95,10 @@ func (n *NotesServer) sendResponce(chatID int64, note Note) error {
 }
 
 func (n *NotesServer) sendList(chatID int64) error {
-	//titlesList := n.ListMessage()
+	titlesList := n.ListMessage()
 	reqBody := &sendMessageReqBody{
 		ChatID: chatID,
-		Text:   "titlesList",
+		Text:   titlesList,
 	}
 
 	reqBytes, err := json.Marshal(reqBody)
