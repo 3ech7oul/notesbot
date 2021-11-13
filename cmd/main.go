@@ -18,7 +18,7 @@ func main() {
 	fmt.Printf("Posts indexed: %d\n", len(notes))
 
 	client := restclient.Client
-	response, error := restclient.SendNotes(client, "http://localhost:5000/sync-notes", notes)
+	response, error := restclient.SendNotes(client, "https://notesbot-r96tq.ondigitalocean.app/sync-notes", notes)
 	if error != nil {
 		panic(error)
 	}
