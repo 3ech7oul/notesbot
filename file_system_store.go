@@ -62,6 +62,7 @@ func LoadNotes(rdr io.Reader) ([]Note, error) {
 
 func (s *FileSystemStore) StoreNotes(notes []Note) {
 	s.database.Encode(notes)
+	s.Notes = notes
 }
 
 func (s *FileSystemStore) AllNotes() []Note {
