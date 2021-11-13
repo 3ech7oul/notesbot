@@ -34,7 +34,6 @@ type sendMessageReqBody struct {
 
 func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 
-	fmt.Println(len(n.store.AllNotes()))
 	body := &webhookReqBody{}
 	if err := json.NewDecoder(req.Body).Decode(body); err != nil {
 		fmt.Println("could not decode request body", err)
@@ -52,7 +51,6 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	requestdNote := body.Message.Text
-	fmt.Println(requestdNote)
 
 	note, err := FindNoteByAttribute(n.store.AllNotes(), requestdNote)
 
@@ -77,7 +75,6 @@ func (n *NotesServer) sendResponce(chatID int64, note Note) error {
 		ChatID: chatID,
 		Text:   note.Body,
 	}
-	fmt.Println(note)
 
 	reqBytes, err := json.Marshal(reqBody)
 	if err != nil {
@@ -98,7 +95,7 @@ func (n *NotesServer) sendResponce(chatID int64, note Note) error {
 
 func (n *NotesServer) sendList(chatID int64) error {
 	titlesList := n.ListMessage()
-	fmt.Println(titlesList)
+
 	reqBody := &sendMessageReqBody{
 		ChatID: chatID,
 		Text:   titlesList,
@@ -126,12 +123,12 @@ func (n *NotesServer) ListMessage() string {
 	var titles []string
 	for i, note := range n.store.AllNotes() {
 		if i <= 10 {
-			titles = append(titles, fmt.Sprintf("/%s", note.Title))
+			titles = append(titles, fmt.Sprintf("%s", note.Title))
 		}
 
 	}
 
-	return strings.Join(titles[:], ` \n `)
+	return strings.Join(titles[:], "\n")
 }
 
 func (n *NotesServer) OneMessage(title string) string {
