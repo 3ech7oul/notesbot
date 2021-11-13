@@ -121,11 +121,8 @@ func (n *NotesServer) sendList(chatID int64) error {
 
 func (n *NotesServer) ListMessage() string {
 	var titles []string
-	for i, note := range n.store.AllNotes() {
-		if i <= 10 {
-			titles = append(titles, fmt.Sprintf("%s", note.Title))
-		}
-
+	for _, note := range n.store.AllNotes() {
+		titles = append(titles, fmt.Sprintf("%s", note.Title))
 	}
 
 	return strings.Join(titles[:], "\n")
