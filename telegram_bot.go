@@ -49,7 +49,7 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	requestdNote := strings.ToLower(body.Message.Text)
+	requestdNote := body.Message.Text
 	fmt.Println(requestdNote)
 
 	note, err := FindNoteByAttribute(n.store.AllNotes(), requestdNote)
@@ -96,6 +96,7 @@ func (n *NotesServer) sendResponce(chatID int64, note Note) error {
 
 func (n *NotesServer) sendList(chatID int64) error {
 	titlesList := n.ListMessage()
+	fmt.Println(titlesList)
 	reqBody := &sendMessageReqBody{
 		ChatID: chatID,
 		Text:   titlesList,
@@ -127,7 +128,7 @@ func (n *NotesServer) ListMessage() string {
 		}
 
 	}
-
+	fmt.Println(titles)
 	return strings.Join(titles[:], ` \n `)
 }
 
