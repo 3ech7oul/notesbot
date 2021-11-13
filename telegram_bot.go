@@ -33,6 +33,8 @@ type sendMessageReqBody struct {
 }
 
 func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
+
+	fmt.Println(len(n.store.AllNotes()))
 	body := &webhookReqBody{}
 	if err := json.NewDecoder(req.Body).Decode(body); err != nil {
 		fmt.Println("could not decode request body", err)
@@ -128,7 +130,7 @@ func (n *NotesServer) ListMessage() string {
 		}
 
 	}
-	fmt.Println(titles)
+
 	return strings.Join(titles[:], ` \n `)
 }
 
