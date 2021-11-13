@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -18,20 +19,25 @@ type instanceConfig struct {
 	DbFileName    string `yaml:"db_file_name"`
 }
 
-func (c *instanceConfig) Parse(data []byte) error {
+func (c *instanceConfig) parse(data []byte) error {
 	return yaml.Unmarshal(data, c)
 }
 
 func main() {
-	data, err := ioutil.ReadFile("settings.yaml")
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	var config instanceConfig
+	dataconf, err := ioutil.ReadFile("settings.yaml")
+	if err != nil {
+		fmt.Println(err)
 
-	if err := config.Parse(data); err != nil {
-		log.Fatal(err)
+		config.ServerHost = os.Getenv("S_HOST")
+		config.ServerPort = os.Getenv("s_PORT")
+		config.TelegramToken = os.Getenv("TOKEN")
+		config.DbFileName = os.Getenv("DB_FILE")
+
+	} else {
+		if err := config.parse(dataconf); err != nil {
+			fmt.Println(err)
+		}
 	}
 
 	db, err := os.OpenFile(config.DbFileName, os.O_RDWR|os.O_CREATE, 0666)
