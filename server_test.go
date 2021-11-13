@@ -44,7 +44,7 @@ func init() {
 
 func TestPOSTNotesReceiver(t *testing.T) {
 	store := StubStore{}
-	server := notesbot.NewServer(&store)
+	server := notesbot.NewServer(&store, "token")
 
 	fs := fstest.MapFS{
 		"hello world.md":  {Data: []byte(firstBody)},

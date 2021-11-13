@@ -23,7 +23,7 @@ func TestTelegramBot(t *testing.T) {
 
 	notes, _ := notesbot.NewNotesFromFS("", fs)
 	store := StubStore{notes: notes}
-	bot := notesbot.NewServer(&store)
+	bot := notesbot.NewServer(&store, "token")
 
 	t.Run("List Message", func(t *testing.T) {
 		got := bot.ListMessage()
@@ -35,7 +35,7 @@ func TestTelegramBot(t *testing.T) {
 	})
 
 	t.Run("One Message", func(t *testing.T) {
-		got, _ := bot.OneMessage("hello world")
+		got := bot.OneMessage("hello world")
 		want := `hello world \n Hello world Body`
 
 		if want != got {

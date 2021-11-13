@@ -15,9 +15,10 @@ type Store interface {
 type NotesServer struct {
 	store Store
 	http.Handler
+	telegramToken string
 }
 
-func NewServer(store Store) *NotesServer {
+func NewServer(store Store, telegramToken string) *NotesServer {
 	s := new(NotesServer)
 	s.store = store
 
@@ -26,12 +27,9 @@ func NewServer(store Store) *NotesServer {
 	router.Handle("/bot", http.HandlerFunc(s.botHandler))
 
 	s.Handler = router
+	s.telegramToken = telegramToken
 
 	return s
-}
-
-func (n *NotesServer) SendNotes() {
-
 }
 
 func (n *NotesServer) getNote(w http.ResponseWriter, r *http.Request) {

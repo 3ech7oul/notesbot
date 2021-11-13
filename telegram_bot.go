@@ -9,8 +9,6 @@ import (
 	"strings"
 )
 
-const TELEGRAM_POST_URL = "https://api.telegram.org/bot777845702:AAFdPS_taJ3pTecEFv2jXkmbQfeOqVZGERw/sendMessage"
-
 type NotesBoot struct {
 	store Store
 	http.Handler
@@ -56,18 +54,20 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 
 	if nil != err {
 		fmt.Println("error in sending reply:", err)
+
 		return
 	}
 
-	if err := sendResponce(body.Message.Chat.ID, note); err != nil {
+	if err := n.sendResponce(body.Message.Chat.ID, note); err != nil {
 		fmt.Println("error in sending reply:", err)
+
 		return
 	}
 
 	fmt.Println("reply sent")
 }
 
-func sendResponce(chatID int64, note Note) error {
+func (n *NotesServer) sendResponce(chatID int64, note Note) error {
 
 	reqBody := &sendMessageReqBody{
 		ChatID: chatID,
@@ -80,10 +80,11 @@ func sendResponce(chatID int64, note Note) error {
 	}
 
 	// Send a post request with your token
-	res, err := http.Post(TELEGRAM_POST_URL, "application/json", bytes.NewBuffer(reqBytes))
+	res, err := http.Post(n.urlPost(), "application/json", bytes.NewBuffer(reqBytes))
 	if err != nil {
 		return err
 	}
+
 	if res.StatusCode != http.StatusOK {
 		return errors.New("unexpected status" + res.Status)
 	}
@@ -104,7 +105,7 @@ func (n *NotesServer) sendList(chatID int64) error {
 	}
 
 	// Send a post request with your token
-	res, err := http.Post(TELEGRAM_POST_URL, "application/json", bytes.NewBuffer(reqBytes))
+	res, err := http.Post(n.urlPost(), "application/json", bytes.NewBuffer(reqBytes))
 	if err != nil {
 		return err
 	}
@@ -124,16 +125,20 @@ func (n *NotesServer) ListMessage() string {
 	return strings.Join(titles[:], ` \n `)
 }
 
-func (n *NotesServer) OneMessage(title string) (string, error) {
+func (n *NotesServer) OneMessage(title string) string {
 	var message string
 
 	note, err := FindNoteByAttribute(n.store.AllNotes(), title)
 	if nil != err {
-		return message, err
+		return "Message not found"
 	}
 
 	message = fmt.Sprintf(`%s \n %s`, note.Title, note.Body)
 
-	return message, nil
+	return message
 
+}
+
+func (n *NotesServer) urlPost() string {
+	return fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", n.telegramToken)
 }

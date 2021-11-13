@@ -1,13 +1,12 @@
 package main
 
 import (
-	"bufio"
 	notesbot "deni/notesbot"
+	restclient "deni/notesbot/utils"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
-	"strconv"
-	"strings"
 )
 
 func main() {
@@ -18,18 +17,15 @@ func main() {
 
 	fmt.Printf("Posts indexed: %d\n", len(notes))
 
-	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString('\n')
-	if err != nil {
-		log.Fatal(err)
+	client := restclient.Client
+	response, error := restclient.SendNotes(client, "http://localhost:5000/sync-notes", notes)
+	if error != nil {
+		panic(error)
 	}
+	defer response.Body.Close()
 
-	input = strings.TrimSpace(input)
-	noteIndex, err := strconv.ParseInt(input, 10, 64)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(notes[noteIndex])
+	fmt.Println("response Status:", response.Status)
+	fmt.Println("response Headers:", response.Header)
+	body, _ := ioutil.ReadAll(response.Body)
+	fmt.Println("response Body:", string(body))
 }

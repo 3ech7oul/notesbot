@@ -36,7 +36,6 @@ func Post(url string, body interface{}, headers http.Header) (*http.Response, er
 }
 
 func SendNotes(client HTTPClient, url string, notes []notesbot.Note) (*http.Response, error) {
-
 	jsonBytes, _ := json.Marshal(notes)
 	r := ioutil.NopCloser(bytes.NewReader(jsonBytes))
 	request, _ := http.NewRequest("POST", url, r)
