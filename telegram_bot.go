@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -104,13 +105,14 @@ func (n *NotesServer) sendList(chatID int64) error {
 		return err
 	}
 
-	// Send a post request with your token
 	res, err := http.Post(n.urlPost(), "application/json", bytes.NewBuffer(reqBytes))
 	if err != nil {
 		return err
 	}
+	body, _ := ioutil.ReadAll(res.Body)
+
 	if res.StatusCode != http.StatusOK {
-		return errors.New("unexpected 34 status" + res.Status)
+		return errors.New("response Body:" + string(body))
 	}
 
 	return nil
@@ -119,7 +121,7 @@ func (n *NotesServer) sendList(chatID int64) error {
 func (n *NotesServer) ListMessage() string {
 	var titles []string
 	for i, note := range n.store.AllNotes() {
-		if 10 <= i {
+		if i <= 10 {
 			titles = append(titles, fmt.Sprintf("/%s", note.Title))
 		}
 
