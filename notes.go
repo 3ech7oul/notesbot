@@ -2,52 +2,38 @@ package notesbot
 
 import (
 	"errors"
-	"fmt"
 	"io/fs"
+	"log"
 	"os"
+	"path"
+	"path/filepath"
 	"strings"
 )
 
-func NewNotesFromFS(rootPath string, ileSystem fs.FS) ([]Note, error) {
-	var posts []Note
+func NewNotesFromFS(rootPath string, fileSystem fs.FS) ([]Note, error) {
+	var notes []Note
 
-	posts, _ = readFiles(rootPath, ileSystem, posts)
-
-	return posts, nil
-}
-
-func readFiles(rootPath string, fileSystem fs.FS, posts []Note) ([]Note, error) {
-	dir, err := fs.ReadDir(fileSystem, ".")
-	if err != nil {
-		return nil, err
-	}
-
-	for _, f := range dir {
-		post, err := getNote(fileSystem, f.Name())
-
-		if f.IsDir() {
-			var notesInDir []Note
-			str := fmt.Sprintf("./%s/%s", rootPath, f.Name())
-			notesInDir, _ = readFiles(rootPath, os.DirFS(str), posts)
-
-			for _, n := range notesInDir {
-				posts = append(posts, n)
+	err := filepath.Walk(rootPath,
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
 			}
-		}
 
-		if err != nil {
-			return nil, err //todo: needs clarification, should we totally fail if one file fails? or just ignore?
-		}
+			note, _ := getNote(fileSystem, path)
+			note.Title = filenameWithoutExtension(info.Name())
+			notes = append(notes, note)
 
-		post.Title = strings.ReplaceAll(f.Name(), ".md", "")
-		posts = append(posts, post)
+			return nil
+		})
+	if err != nil {
+		log.Println(err)
 	}
 
-	return posts, nil
+	return notes, nil
 }
 
 func getNote(fileSystem fs.FS, fileName string) (Note, error) {
-	postFile, err := fileSystem.Open(fileName)
+	postFile, err := os.Open(fileName)
 	if err != nil {
 		return Note{}, err
 	}
@@ -74,4 +60,8 @@ func AllNotesTitleList(notes []Note) []string {
 	}
 
 	return index
+}
+
+func filenameWithoutExtension(fn string) string {
+	return strings.TrimSuffix(fn, path.Ext(fn))
 }
