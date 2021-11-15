@@ -52,6 +52,8 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 
 	s := body.Message.Text
 	requestdNote := strings.Replace(s, "/", "", -1)
+	fmt.Println(body.Message.Text)
+	fmt.Println(requestdNote)
 
 	note, err := FindNoteByAttribute(n.store.AllNotes(), requestdNote)
 

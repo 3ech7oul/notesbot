@@ -24,21 +24,24 @@ func assertNote(t *testing.T, got notesbot.Note, want notesbot.Note) {
 func TestFindNoteByAttribute(t *testing.T) {
 	var notes []notesbot.Note
 	notes = append(notes, notesbot.Note{
-		Title: "hello world",
-		Body:  "Hello world Body",
-		Tags:  []string{"tdd", "go"},
+		Title:      "hello world",
+		Body:       "Hello world Body",
+		Tags:       []string{"tdd", "go"},
+		TelegramId: 1,
 	})
 	notes = append(notes, notesbot.Note{
-		Title: "hello-world2",
-		Body:  "secondBody",
+		Title:      "hello-world2",
+		Body:       "secondBody",
+		TelegramId: 2,
 	})
 
 	t.Run("Note found", func(t *testing.T) {
-		note, _ := notesbot.FindNoteByAttribute(notes, "hello world")
+		note, _ := notesbot.FindNoteByAttribute(notes, "1")
 		assertNote(t, note, notesbot.Note{
-			Title: "hello world",
-			Body:  "Hello world Body",
-			Tags:  []string{"tdd", "go"},
+			Title:      "hello world",
+			Body:       "Hello world Body",
+			Tags:       []string{"tdd", "go"},
+			TelegramId: 1,
 		})
 	})
 
