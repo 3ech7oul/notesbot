@@ -53,8 +53,8 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 
 	s := body.Message.Text
 	requestdNote := strings.Replace(s, "/", "", -1)
-
-	note, err := FindNoteByAttribute(n.store.AllNotes(), strconv.ParseInt(requestdNote, 10, 64))
+	i, err := strconv.ParseInt(requestdNote, 10, 64)
+	note, err := FindNoteByAttribute(n.store.AllNotes(), i)
 
 	if nil != err {
 		fmt.Println("error in sending reply:", err)
