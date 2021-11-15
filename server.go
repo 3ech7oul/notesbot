@@ -38,7 +38,7 @@ func (n *NotesServer) getNote(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("content-type", jsonContentType)
 
-	note, err := FindNoteByAttribute(n.store.AllNotes(), "")
+	note, err := FindNoteByAttribute(n.store.AllNotes(), 0)
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
