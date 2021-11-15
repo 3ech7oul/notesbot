@@ -3,6 +3,7 @@ package notesbot
 import (
 	"bufio"
 	"bytes"
+	"crypto/rand"
 	"fmt"
 	"io"
 	"strings"
@@ -15,9 +16,10 @@ const (
 )
 
 type Note struct {
-	Title string
-	Tags  []string
-	Body  string
+	Title      string
+	Tags       []string
+	Body       string
+	TelegramId int64
 }
 
 func newNote(noteBody io.Reader) (Note, error) {
@@ -43,4 +45,14 @@ func readBody(scanner *bufio.Scanner) string {
 	}
 
 	return strings.TrimSuffix(buf.String(), "\n")
+}
+
+func (n *Note) GetTelegramId() int64 {
+	if 0 != n.TelegramId {
+		return n.TelegramId
+	}
+	id, _ := rand.Prime(rand.Reader, 10)
+	n.TelegramId = id.Int64()
+
+	return n.TelegramId
 }

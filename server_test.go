@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"testing/fstest"
 )
 
 const (
@@ -46,12 +45,15 @@ func TestPOSTNotesReceiver(t *testing.T) {
 	store := StubStore{}
 	server := notesbot.NewServer(&store, "token")
 
-	fs := fstest.MapFS{
-		"hello world.md":  {Data: []byte(firstBody)},
-		"hello-world2.md": {Data: []byte(secondBody)},
-	}
-
-	notes, _ := notesbot.NewNotesFromFS("", fs)
+	var notes []notesbot.Note
+	notes = append(notes, notesbot.Note{
+		Title: "hello world",
+		Body:  firstBody,
+	})
+	notes = append(notes, notesbot.Note{
+		Title: "hello-world2",
+		Body:  firstBody,
+	})
 	jsonBytes, _ := json.Marshal(notes)
 
 	t.Run("Sync notes", func(t *testing.T) {

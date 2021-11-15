@@ -1,13 +1,8 @@
 package notesbot_test
 
 import (
-	"bytes"
 	notesbot "deni/notesbot"
-	"encoding/json"
-	"net/http"
-	"net/http/httptest"
 	"testing"
-	"testing/fstest"
 )
 
 type webhookReqBody struct {
@@ -20,18 +15,18 @@ type webhookReqBody struct {
 }
 
 func TestTelegramBot(t *testing.T) {
-	fs := fstest.MapFS{
-		"hello world.md":  {Data: []byte(firstBody)},
-		"hello-world2.md": {Data: []byte(secondBody)},
-	}
-
-	notes, _ := notesbot.NewNotesFromFS("", fs)
+	var notes []notesbot.Note
+	notes = append(notes, notesbot.Note{
+		Title:      "hello world",
+		Body:       firstBody,
+		TelegramId: 50,
+	})
 	store := StubStore{notes: notes}
 	bot := notesbot.NewServer(&store, "t")
 
 	t.Run("List Message", func(t *testing.T) {
 		got := bot.ListMessage()
-		want := `/hello world \n /hello-world2`
+		want := `/50 hello world`
 
 		if want != got {
 			t.Errorf("response body is wrong, got %s want %s", got, want)
@@ -39,26 +34,4 @@ func TestTelegramBot(t *testing.T) {
 
 	})
 
-	t.Run("One Message", func(t *testing.T) {
-		got := bot.OneMessage("hello world")
-		want := `hello world \n Hello world Body`
-
-		if want != got {
-			t.Errorf("response body is wrong, got %s want %s", got, want)
-		}
-	})
-
-	t.Run("Send Message", func(t *testing.T) {
-		j := &webhookReqBody{}
-		j.Message.Text = "get list"
-		j.Message.Chat.ID = 111
-
-		jsonBytes, _ := json.Marshal(j)
-
-		request, _ := http.NewRequest(http.MethodPost, "/bot", bytes.NewReader(jsonBytes))
-		response := httptest.NewRecorder()
-
-		bot.ServeHTTP(response, request)
-
-	})
 }

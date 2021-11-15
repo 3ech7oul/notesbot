@@ -1,0 +1,4 @@
+server_host: http://localhost
+server_port: 5000
+telegram_token: 2119887550:AAEj1F33Rp7SszeuwxSlt8JPlivDTPZJI2c
+db_file_name: notes.db.json

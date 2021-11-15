@@ -6,34 +6,12 @@ import (
 	"io/fs"
 	"reflect"
 	"testing"
-	"testing/fstest"
 )
 
 type StubFailingFS struct{}
 
 func (s StubFailingFS) Open(name string) (fs.File, error) {
 	return nil, errors.New("oh no, i always fail")
-}
-
-func TestNewNotes(t *testing.T) {
-
-	fs := fstest.MapFS{
-		"hello world.md":  {Data: []byte(firstBody)},
-		"hello-world2.md": {Data: []byte(secondBody)},
-	}
-
-	posts, err := notesbot.NewNotesFromFS("", fs)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// rest of test code cut for brevity
-	assertNote(t, posts[0], notesbot.Note{
-		Title: "hello world",
-		Tags:  []string{"tdd", "go"},
-		Body:  `Hello world Body`,
-	})
 }
 
 func assertNote(t *testing.T, got notesbot.Note, want notesbot.Note) {
@@ -44,23 +22,23 @@ func assertNote(t *testing.T, got notesbot.Note, want notesbot.Note) {
 }
 
 func TestFindNoteByAttribute(t *testing.T) {
-	fs := fstest.MapFS{
-		"hello world.md":  {Data: []byte(firstBody)},
-		"hello-world2.md": {Data: []byte(secondBody)},
-	}
-
-	notes, err := notesbot.NewNotesFromFS("", fs)
-
-	if err != nil {
-		t.Fatal(err)
-	}
+	var notes []notesbot.Note
+	notes = append(notes, notesbot.Note{
+		Title: "hello world",
+		Body:  "Hello world Body",
+		Tags:  []string{"tdd", "go"},
+	})
+	notes = append(notes, notesbot.Note{
+		Title: "hello-world2",
+		Body:  "secondBody",
+	})
 
 	t.Run("Note found", func(t *testing.T) {
 		note, _ := notesbot.FindNoteByAttribute(notes, "hello world")
 		assertNote(t, note, notesbot.Note{
 			Title: "hello world",
+			Body:  "Hello world Body",
 			Tags:  []string{"tdd", "go"},
-			Body:  `Hello world Body`,
 		})
 	})
 
