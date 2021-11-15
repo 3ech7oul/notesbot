@@ -50,7 +50,8 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	requestdNote := body.Message.Text
+	s := body.Message.Text
+	requestdNote := strings.Replace(s, "/", "", -1)
 
 	note, err := FindNoteByAttribute(n.store.AllNotes(), requestdNote)
 

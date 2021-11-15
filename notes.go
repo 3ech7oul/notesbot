@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -45,7 +46,7 @@ func getNote(fileSystem fs.FS, fileName string) (Note, error) {
 func FindNoteByAttribute(notes []Note, needle string) (Note, error) {
 	n := Note{}
 	for _, n := range notes {
-		if needle == n.Title {
+		if needle == strconv.FormatInt(n.TelegramId, 16) {
 			return n, nil
 		}
 	}
