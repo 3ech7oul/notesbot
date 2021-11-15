@@ -13,15 +13,17 @@ import (
 func NewNotesFromFS(rootPath string, fileSystem fs.FS) ([]Note, error) {
 	var notes []Note
 
+	var index int
 	err := filepath.Walk(rootPath,
 		func(path string, info os.FileInfo, err error) error {
+			index++
 			if err != nil {
 				return err
 			}
 
 			note, _ := getNote(fileSystem, path)
 			note.Title = filenameWithoutExtension(info.Name())
-			note.TelegramId = note.GetTelegramId()
+			note.TelegramId = int64(index)
 			notes = append(notes, note)
 
 			return nil
