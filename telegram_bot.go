@@ -72,6 +72,11 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 	fmt.Println("reply sent")
 }
 
+func (n *NotesServer) ComandHelper(command string) string {
+
+	return strings.Replace(command, "/", "", -1)
+}
+
 func (n *NotesServer) sendResponce(chatID int64, note Note) error {
 
 	reqBody := &sendMessageReqBody{

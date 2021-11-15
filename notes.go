@@ -30,6 +30,10 @@ func NewNotesFromFS(rootPath string, fileSystem fs.FS) ([]Note, error) {
 		log.Println(err)
 	}
 
+	for _, n := range notes {
+		n.TelegramId = n.GetTelegramId()
+	}
+
 	return notes, nil
 }
 
