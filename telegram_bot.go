@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -52,10 +53,8 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 
 	s := body.Message.Text
 	requestdNote := strings.Replace(s, "/", "", -1)
-	fmt.Println(body.Message.Text)
-	fmt.Println(requestdNote)
 
-	note, err := FindNoteByAttribute(n.store.AllNotes(), requestdNote)
+	note, err := FindNoteByAttribute(n.store.AllNotes(), strconv.ParseInt(requestdNote, 10, 64))
 
 	if nil != err {
 		fmt.Println("error in sending reply:", err)
@@ -136,10 +135,10 @@ func (n *NotesServer) ListMessage() string {
 	return strings.Join(titles[:], "\n")
 }
 
-func (n *NotesServer) OneMessage(title string) string {
+func (n *NotesServer) OneMessage(id int64) string {
 	var message string
 
-	note, err := FindNoteByAttribute(n.store.AllNotes(), title)
+	note, err := FindNoteByAttribute(n.store.AllNotes(), id)
 	if nil != err {
 		return "Message not found"
 	}
