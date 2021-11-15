@@ -22,16 +22,13 @@ func NewNotesFromFS(rootPath string, fileSystem fs.FS) ([]Note, error) {
 
 			note, _ := getNote(fileSystem, path)
 			note.Title = filenameWithoutExtension(info.Name())
+			note.TelegramId = note.GetTelegramId()
 			notes = append(notes, note)
 
 			return nil
 		})
 	if err != nil {
 		log.Println(err)
-	}
-
-	for _, n := range notes {
-		n.TelegramId = n.GetTelegramId()
 	}
 
 	return notes, nil

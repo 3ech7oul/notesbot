@@ -51,6 +51,7 @@ func (n *Note) GetTelegramId() int64 {
 	if 0 != n.TelegramId {
 		return n.TelegramId
 	}
+
 	id, _ := rand.Prime(rand.Reader, 10)
 	n.TelegramId = id.Int64()
 
