@@ -21,6 +21,10 @@ func NewNotesFromFS(rootPath string, fileSystem fs.FS) ([]Note, error) {
 				return err
 			}
 
+			if info.IsDir() {
+				return nil
+			}
+
 			note, _ := getNote(fileSystem, path)
 			note.Title = filenameWithoutExtension(info.Name())
 			note.TelegramId = int64(index)
