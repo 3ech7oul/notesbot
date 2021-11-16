@@ -22,7 +22,8 @@ type webhookReqBody struct {
 	Message struct {
 		Text string `json:"text"`
 		Chat struct {
-			ID int64 `json:"id"`
+			ID       int64  `json:"id"`
+			Username string `json:"text"`
 		} `json:"chat"`
 	} `json:"message"`
 }
@@ -36,11 +37,12 @@ type sendMessageReqBody struct {
 func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 
 	body := &webhookReqBody{}
-	fmt.Println(req.Body)
+
 	if err := json.NewDecoder(req.Body).Decode(body); err != nil {
 		fmt.Println("could not decode request body", err)
 		return
 	}
+	fmt.Println(body)
 
 	if strings.Contains(strings.ToLower(body.Message.Text), "get list") {
 		if err := n.sendList(body.Message.Chat.ID); err != nil {
