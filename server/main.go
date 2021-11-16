@@ -13,7 +13,6 @@ import (
 )
 
 type instanceConfig struct {
-	ServerHost    string `yaml:"server_host"`
 	ServerPort    string `yaml:"server_port"`
 	TelegramToken string `yaml:"telegram_token"`
 	DbFileName    string `yaml:"db_file_name"`
@@ -29,7 +28,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 
-		config.ServerHost = os.Getenv("S_HOST")
 		config.ServerPort = os.Getenv("s_PORT")
 		config.TelegramToken = os.Getenv("TOKEN")
 		config.DbFileName = os.Getenv("DB_FILE")

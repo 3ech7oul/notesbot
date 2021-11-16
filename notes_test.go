@@ -36,7 +36,7 @@ func TestFindNoteByAttribute(t *testing.T) {
 	})
 
 	t.Run("Note found", func(t *testing.T) {
-		note, _ := notesbot.FindNoteByAttribute(notes, "1")
+		note, _ := notesbot.FindNoteByAttribute(notes, 1)
 		assertNote(t, note, notesbot.Note{
 			Title:      "hello world",
 			Body:       "Hello world Body",
@@ -46,7 +46,7 @@ func TestFindNoteByAttribute(t *testing.T) {
 	})
 
 	t.Run("Note not found", func(t *testing.T) {
-		note, err := notesbot.FindNoteByAttribute(notes, "hello world asd")
+		note, err := notesbot.FindNoteByAttribute(notes, 3)
 		assertNote(t, note, notesbot.Note{})
 
 		if err == nil {
