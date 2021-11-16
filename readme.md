@@ -11,3 +11,6 @@ s_PORT
 TOKEN - telegram bot token
 DB_FILE
 ```
+
+### Set telegram Webhook
+curl -F "url=https://notesbot-r96tq.ondigitalocean.app/bot"  https://api.telegram.org/bot<token>/setWebhook

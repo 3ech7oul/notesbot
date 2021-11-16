@@ -36,6 +36,7 @@ type sendMessageReqBody struct {
 func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 
 	body := &webhookReqBody{}
+	fmt.Println(req.Body)
 	if err := json.NewDecoder(req.Body).Decode(body); err != nil {
 		fmt.Println("could not decode request body", err)
 		return
