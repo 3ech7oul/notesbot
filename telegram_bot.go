@@ -60,7 +60,7 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 		n.authorizedChatId = body.Message.Chat.ID
 	}
 
-	if n.authorizedChatId != body.Message.Chat.ID {
+	if n.authorizedChatId != body.Message.Chat.ID || n.authorizedChatId == 0 {
 		n.sendMessage(body.Message.Chat.ID, "unauthorized request")
 		fmt.Println("unauthorized request")
 

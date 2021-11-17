@@ -6,6 +6,7 @@ import (
 	restclient "deni/notesbot/utils"
 	mocks "deni/notesbot/utils/mocks"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -52,7 +53,7 @@ func init() {
 
 func TestPOSTNotesReceiver(t *testing.T) {
 	store := StubStore{}
-	server := notesbot.NewServer(&store, "token", "secet")
+	server := notesbot.NewServer(&store, "token", "secret")
 
 	var notes []notesbot.Note
 	notes = append(notes, notesbot.Note{
@@ -80,24 +81,37 @@ func TestPOSTNotesReceiver(t *testing.T) {
 			t.Errorf("response body is wrong, got %d want %d", gotNotesCount, wantNotesCount)
 		}
 	})
-	/*
-		t.Run("Bot Auth", func(t *testing.T) {
 
-			message := webhookReqBody{}
-			message.Message.Text = "/auth"
-			message.Message.Chat.ID = int64(23)
-			messageBytes, _ := json.Marshal(message)
+	t.Run("Bot Auth", func(t *testing.T) {
 
-			request, _ := http.NewRequest(http.MethodPost, "/bot", bytes.NewReader(messageBytes))
-			response := httptest.NewRecorder()
+		message := webhookReqBody{}
+		message.Message.Text = "/authsecret"
+		message.Message.Chat.ID = int64(23)
+		messageBytes, _ := json.Marshal(message)
 
-			server.ServeHTTP(response, request)
+		request, _ := http.NewRequest(http.MethodPost, "/bot", bytes.NewReader(messageBytes))
+		response := httptest.NewRecorder()
 
-			body, _ := ioutil.ReadAll(response.Body)
-			fmt.Println("response Body:", string(body))
+		server.ServeHTTP(response, request)
 
-		})
-	*/
+		body, _ := ioutil.ReadAll(response.Body)
+		fmt.Println("response Body:", string(body))
+
+		messageList := webhookReqBody{}
+		messageList.Message.Text = "/get list"
+		messageList.Message.Chat.ID = int64(23)
+		messageListBytes, _ := json.Marshal(messageList)
+		requestList, _ := http.NewRequest(http.MethodPost, "/bot", bytes.NewReader(messageListBytes))
+
+		responseList := httptest.NewRecorder()
+
+		server.ServeHTTP(responseList, requestList)
+
+		bodyList, _ := ioutil.ReadAll(responseList.Body)
+		fmt.Println("response get list Body:", string(bodyList))
+
+	})
+
 }
 
 func TestPOSTNotesTransmitter(t *testing.T) {
