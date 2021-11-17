@@ -15,10 +15,12 @@ type Store interface {
 type NotesServer struct {
 	store Store
 	http.Handler
-	telegramToken string
+	telegramToken    string
+	telegramSecret   string
+	authorizedChatId int64
 }
 
-func NewServer(store Store, telegramToken string) *NotesServer {
+func NewServer(store Store, telegramToken string, telegramSecret string) *NotesServer {
 	s := new(NotesServer)
 	s.store = store
 
@@ -28,6 +30,7 @@ func NewServer(store Store, telegramToken string) *NotesServer {
 
 	s.Handler = router
 	s.telegramToken = telegramToken
+	s.telegramSecret = telegramSecret
 
 	return s
 }

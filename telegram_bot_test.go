@@ -5,15 +5,6 @@ import (
 	"testing"
 )
 
-type webhookReqBody struct {
-	Message struct {
-		Text string `json:"text"`
-		Chat struct {
-			ID int64 `json:"id"`
-		} `json:"chat"`
-	} `json:"message"`
-}
-
 func TestTelegramBot(t *testing.T) {
 	var notes []notesbot.Note
 	notes = append(notes, notesbot.Note{
@@ -22,7 +13,7 @@ func TestTelegramBot(t *testing.T) {
 		TelegramId: 345,
 	})
 	store := StubStore{notes: notes}
-	bot := notesbot.NewServer(&store, "t")
+	bot := notesbot.NewServer(&store, "t", "s")
 
 	t.Run("List Message", func(t *testing.T) {
 		got := bot.ListMessage()

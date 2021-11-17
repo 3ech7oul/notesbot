@@ -25,6 +25,15 @@ L
 M`
 )
 
+type webhookReqBody struct {
+	Message struct {
+		Text string `json:"text"`
+		Chat struct {
+			ID int64 `json:"id"`
+		} `json:"chat"`
+	} `json:"message"`
+}
+
 type StubStore struct {
 	notes []notesbot.Note
 }
@@ -43,7 +52,7 @@ func init() {
 
 func TestPOSTNotesReceiver(t *testing.T) {
 	store := StubStore{}
-	server := notesbot.NewServer(&store, "token")
+	server := notesbot.NewServer(&store, "token", "secet")
 
 	var notes []notesbot.Note
 	notes = append(notes, notesbot.Note{
@@ -71,6 +80,24 @@ func TestPOSTNotesReceiver(t *testing.T) {
 			t.Errorf("response body is wrong, got %d want %d", gotNotesCount, wantNotesCount)
 		}
 	})
+	/*
+		t.Run("Bot Auth", func(t *testing.T) {
+
+			message := webhookReqBody{}
+			message.Message.Text = "/auth"
+			message.Message.Chat.ID = int64(23)
+			messageBytes, _ := json.Marshal(message)
+
+			request, _ := http.NewRequest(http.MethodPost, "/bot", bytes.NewReader(messageBytes))
+			response := httptest.NewRecorder()
+
+			server.ServeHTTP(response, request)
+
+			body, _ := ioutil.ReadAll(response.Body)
+			fmt.Println("response Body:", string(body))
+
+		})
+	*/
 }
 
 func TestPOSTNotesTransmitter(t *testing.T) {

@@ -42,7 +42,6 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 		fmt.Println("could not decode request body", err)
 		return
 	}
-	fmt.Println(body)
 
 	if strings.Contains(strings.ToLower(body.Message.Text), "get list") {
 		if err := n.sendList(body.Message.Chat.ID); err != nil {
@@ -55,7 +54,21 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	s := body.Message.Text
+
+	authStr := strings.Replace(s, "/auth", "", -1)
+	if n.telegramSecret == authStr {
+		n.authorizedChatId = body.Message.Chat.ID
+	}
+
+	if n.authorizedChatId != body.Message.Chat.ID {
+		n.sendMessage(body.Message.Chat.ID, "unauthorized request")
+		fmt.Println("unauthorized request")
+
+		return
+	}
+
 	requestdNote := strings.Replace(s, "/", "", -1)
+
 	i, err := strconv.ParseInt(requestdNote, 10, 64)
 	note, err := FindNoteByAttribute(n.store.AllNotes(), i)
 
@@ -109,6 +122,31 @@ func (n *NotesServer) sendList(chatID int64) error {
 	reqBody := &sendMessageReqBody{
 		ChatID: chatID,
 		Text:   titlesList,
+	}
+
+	reqBytes, err := json.Marshal(reqBody)
+	if err != nil {
+		return err
+	}
+
+	res, err := http.Post(n.urlPost(), "application/json", bytes.NewBuffer(reqBytes))
+	if err != nil {
+		return err
+	}
+	body, _ := ioutil.ReadAll(res.Body)
+
+	if res.StatusCode != http.StatusOK {
+		return errors.New("response Body:" + string(body))
+	}
+
+	return nil
+}
+
+func (n *NotesServer) sendMessage(chatID int64, message string) error {
+
+	reqBody := &sendMessageReqBody{
+		ChatID: chatID,
+		Text:   message,
 	}
 
 	reqBytes, err := json.Marshal(reqBody)

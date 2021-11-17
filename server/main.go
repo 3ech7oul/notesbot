@@ -13,9 +13,10 @@ import (
 )
 
 type instanceConfig struct {
-	ServerPort    string `yaml:"server_port"`
-	TelegramToken string `yaml:"telegram_token"`
-	DbFileName    string `yaml:"db_file_name"`
+	ServerPort     string `yaml:"server_port"`
+	TelegramToken  string `yaml:"telegram_token"`
+	DbFileName     string `yaml:"db_file_name"`
+	TelegramSecret string `yaml:"secret"`
 }
 
 func (c *instanceConfig) parse(data []byte) error {
@@ -31,6 +32,7 @@ func main() {
 		config.ServerPort = os.Getenv("s_PORT")
 		config.TelegramToken = os.Getenv("TOKEN")
 		config.DbFileName = os.Getenv("DB_FILE")
+		config.Secret = os.Getenv("SECRET")
 
 	} else {
 		if err := config.parse(dataconf); err != nil {
@@ -50,6 +52,6 @@ func main() {
 		log.Fatalf("problem creating file system player store, %v ", err)
 	}
 
-	server := notesbot.NewServer(store, config.TelegramToken)
+	server := notesbot.NewServer(store, config.TelegramToken, config.TelegramSecret)
 	log.Fatal(http.ListenAndServe(":5000", server))
 }
