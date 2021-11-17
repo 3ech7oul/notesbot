@@ -67,7 +67,6 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// df
 	requestdNote := strings.Replace(s, "/", "", -1)
 
 	i, err := strconv.ParseInt(requestdNote, 10, 64)
