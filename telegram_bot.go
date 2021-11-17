@@ -43,16 +43,6 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if strings.Contains(strings.ToLower(body.Message.Text), "get list") {
-		if err := n.sendList(body.Message.Chat.ID); err != nil {
-			fmt.Println("send list:", err)
-
-			return
-		}
-
-		return
-	}
-
 	s := body.Message.Text
 
 	authStr := strings.Replace(s, "/auth", "", -1)
@@ -63,6 +53,16 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 	if n.authorizedChatId != body.Message.Chat.ID || n.authorizedChatId == 0 {
 		n.sendMessage(body.Message.Chat.ID, "unauthorized request")
 		fmt.Println("unauthorized request")
+
+		return
+	}
+
+	if strings.Contains(strings.ToLower(body.Message.Text), "get list") {
+		if err := n.sendList(body.Message.Chat.ID); err != nil {
+			fmt.Println("send list:", err)
+
+			return
+		}
 
 		return
 	}
