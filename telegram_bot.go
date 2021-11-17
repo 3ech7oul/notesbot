@@ -9,8 +9,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-
-	"github.com/gomarkdown/markdown"
 )
 
 type NotesBoot struct {
@@ -32,8 +30,9 @@ type webhookReqBody struct {
 
 // https://core.telegram.org/bots/api#sendmessage
 type sendMessageReqBody struct {
-	ChatID int64  `json:"chat_id"`
-	Text   string `json:"text"`
+	ChatID    int64  `json:"chat_id"`
+	Text      string `json:"text"`
+	ParseMode string `json:"text"`
 }
 
 func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
@@ -95,12 +94,10 @@ func (n *NotesServer) ComandHelper(command string) string {
 
 func (n *NotesServer) sendResponce(chatID int64, note Note) error {
 
-	md := []byte(note.Body)
-	output := markdown.ToHTML(md, nil, nil)
-
 	reqBody := &sendMessageReqBody{
-		ChatID: chatID,
-		Text:   string(output),
+		ChatID:    chatID,
+		Text:      note.Body,
+		ParseMode: "markdown",
 	}
 
 	reqBytes, err := json.Marshal(reqBody)
@@ -124,8 +121,9 @@ func (n *NotesServer) sendList(chatID int64) error {
 	titlesList := n.ListMessage()
 
 	reqBody := &sendMessageReqBody{
-		ChatID: chatID,
-		Text:   titlesList,
+		ChatID:    chatID,
+		Text:      titlesList,
+		ParseMode: "text",
 	}
 
 	reqBytes, err := json.Marshal(reqBody)
@@ -151,6 +149,8 @@ func (n *NotesServer) sendMessage(chatID int64, message string) error {
 	reqBody := &sendMessageReqBody{
 		ChatID: chatID,
 		Text:   message,
+
+		ParseMode: "text",
 	}
 
 	reqBytes, err := json.Marshal(reqBody)
