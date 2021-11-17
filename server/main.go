@@ -32,7 +32,7 @@ func main() {
 		config.ServerPort = os.Getenv("s_PORT")
 		config.TelegramToken = os.Getenv("TOKEN")
 		config.DbFileName = os.Getenv("DB_FILE")
-		config.Secret = os.Getenv("SECRET")
+		config.TelegramSecret = os.Getenv("SECRET")
 
 	} else {
 		if err := config.parse(dataconf); err != nil {
