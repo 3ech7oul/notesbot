@@ -6,7 +6,6 @@ import (
 	restclient "deni/notesbot/utils"
 	mocks "deni/notesbot/utils/mocks"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -81,36 +80,37 @@ func TestPOSTNotesReceiver(t *testing.T) {
 			t.Errorf("response body is wrong, got %d want %d", gotNotesCount, wantNotesCount)
 		}
 	})
+	/*
+		t.Run("Bot Auth", func(t *testing.T) {
 
-	t.Run("Bot Auth", func(t *testing.T) {
+			message := webhookReqBody{}
+			message.Message.Text = "/authsecret"
+			message.Message.Chat.ID = int64(23)
+			messageBytes, _ := json.Marshal(message)
 
-		message := webhookReqBody{}
-		message.Message.Text = "/authsecret"
-		message.Message.Chat.ID = int64(23)
-		messageBytes, _ := json.Marshal(message)
+			request, _ := http.NewRequest(http.MethodPost, "/bot", bytes.NewReader(messageBytes))
+			response := httptest.NewRecorder()
 
-		request, _ := http.NewRequest(http.MethodPost, "/bot", bytes.NewReader(messageBytes))
-		response := httptest.NewRecorder()
+			server.ServeHTTP(response, request)
 
-		server.ServeHTTP(response, request)
+			body, _ := ioutil.ReadAll(response.Body)
+			fmt.Println("response Body:", string(body))
 
-		body, _ := ioutil.ReadAll(response.Body)
-		fmt.Println("response Body:", string(body))
+			messageList := webhookReqBody{}
+			messageList.Message.Text = "/get list"
+			messageList.Message.Chat.ID = int64(23)
+			messageListBytes, _ := json.Marshal(messageList)
+			requestList, _ := http.NewRequest(http.MethodPost, "/bot", bytes.NewReader(messageListBytes))
 
-		messageList := webhookReqBody{}
-		messageList.Message.Text = "/get list"
-		messageList.Message.Chat.ID = int64(23)
-		messageListBytes, _ := json.Marshal(messageList)
-		requestList, _ := http.NewRequest(http.MethodPost, "/bot", bytes.NewReader(messageListBytes))
+			responseList := httptest.NewRecorder()
 
-		responseList := httptest.NewRecorder()
+			server.ServeHTTP(responseList, requestList)
 
-		server.ServeHTTP(responseList, requestList)
+			bodyList, _ := ioutil.ReadAll(responseList.Body)
+			fmt.Println("response get list Body:", string(bodyList))
 
-		bodyList, _ := ioutil.ReadAll(responseList.Body)
-		fmt.Println("response get list Body:", string(bodyList))
-
-	})
+		})
+	*/
 
 }
 

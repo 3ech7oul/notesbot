@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/gomarkdown/markdown"
 )
 
 type NotesBoot struct {
@@ -52,7 +54,6 @@ func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
 
 	if n.authorizedChatId != body.Message.Chat.ID || n.authorizedChatId == 0 {
 		n.sendMessage(body.Message.Chat.ID, "unauthorized request")
-		fmt.Println("unauthorized request")
 
 		return
 	}
@@ -94,9 +95,12 @@ func (n *NotesServer) ComandHelper(command string) string {
 
 func (n *NotesServer) sendResponce(chatID int64, note Note) error {
 
+	md := []byte(note.Body)
+	output := markdown.ToHTML(md, nil, nil)
+
 	reqBody := &sendMessageReqBody{
 		ChatID: chatID,
-		Text:   note.Body,
+		Text:   string(output),
 	}
 
 	reqBytes, err := json.Marshal(reqBody)
@@ -174,20 +178,6 @@ func (n *NotesServer) ListMessage() string {
 	}
 
 	return strings.Join(titles[:], "\n")
-}
-
-func (n *NotesServer) OneMessage(id int64) string {
-	var message string
-
-	note, err := FindNoteByAttribute(n.store.AllNotes(), id)
-	if nil != err {
-		return "Message not found"
-	}
-
-	message = fmt.Sprintf(`%s \n %s`, note.Title, note.Body)
-
-	return message
-
 }
 
 func (n *NotesServer) urlPost() string {
