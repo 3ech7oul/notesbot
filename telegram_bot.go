@@ -123,7 +123,7 @@ func (n *NotesServer) sendList(chatID int64) error {
 	reqBody := &sendMessageReqBody{
 		ChatID:    chatID,
 		Text:      titlesList,
-		ParseMode: "text",
+		ParseMode: "markdown",
 	}
 
 	reqBytes, err := json.Marshal(reqBody)
