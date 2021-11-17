@@ -32,7 +32,7 @@ type webhookReqBody struct {
 type sendMessageReqBody struct {
 	ChatID    int64  `json:"chat_id"`
 	Text      string `json:"text"`
-	ParseMode string `json:"text"`
+	ParseMode string `json:"parse_mode"`
 }
 
 func (n *NotesServer) botHandler(res http.ResponseWriter, req *http.Request) {
